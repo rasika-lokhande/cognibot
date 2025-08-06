@@ -8,6 +8,8 @@ public class KeyboardTeleop : MonoBehaviour
     public float angularSpeed = 1.0f;
 
     private ROSConnection ros;
+
+    [SerializeField]
     private string topicName = "/cmd_vel";
 
     void Start()

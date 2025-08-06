@@ -31,6 +31,12 @@ public class AGVController : MonoBehaviour
 
     void Start()
     {
+
+        if (leftWheel == null || rightWheel == null)
+        {
+            Debug.LogError("Left and Right wheel GameObjects must be assigned.");
+            return;
+        }
         // Get wheel articulation bodies
         leftAB = leftWheel.GetComponent<ArticulationBody>();
         rightAB = rightWheel.GetComponent<ArticulationBody>();

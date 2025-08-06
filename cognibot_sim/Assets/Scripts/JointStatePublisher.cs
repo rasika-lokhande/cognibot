@@ -41,12 +41,39 @@ public class JointStatePublisher : MonoBehaviour
     {
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<JointStateMsg>(topicName);
+       
 
         if (jointEntries == null || jointEntries.Count == 0)
         {
             Debug.LogError("JointStatePublisher: No joints assigned!");
         }
     }
+
+#if UNITY_EDITOR
+    public void EditorAutoPopulateJoints()
+    {
+        jointEntries = new List<JointEntry>();
+        ArticulationBody[] bodies = GetComponentsInChildren<ArticulationBody>();
+
+        foreach (var body in bodies)
+        {
+            if (body.jointType != ArticulationJointType.FixedJoint)
+            {
+                jointEntries.Add(new JointEntry
+                {
+
+                    jointBody = body
+                });
+            }
+        }
+
+        Debug.Log($"[Editor] Auto-populated {jointEntries.Count} joints.");
+        
+
+}
+#endif
+
+
 
     void Update()
     {
@@ -77,7 +104,7 @@ public class JointStatePublisher : MonoBehaviour
             positions[i] = Mathf.Deg2Rad * joint.jointPosition[0]; // Convert to radians
             velocities[i] = joint.jointVelocity[0];                 // Degrees/s
             efforts[i] = joint.jointForce[0];                       // Nm
-            Debug.Log($"Joint {names[i]}: pos={positions[i]}, vel={velocities[i]}, effort={efforts[i]}");
+            //Debug.Log($"Joint {names[i]}: pos={positions[i]}, vel={velocities[i]}, effort={efforts[i]}");
         }
 
 
