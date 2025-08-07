@@ -5,7 +5,7 @@ using RosMessageTypes.Std;
 using RosMessageTypes.BuiltinInterfaces;
 using System;
 
-public class LaserScanPublisher : MonoBehaviour
+public class LaserScanSensor : MonoBehaviour
 {
     [Header("ROS Settings")]
     public string topicName = "/scan";
