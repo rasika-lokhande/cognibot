@@ -13,7 +13,14 @@ public class LidarSensor : MonoBehaviour
     public float scanRate = 10f; // Hz
     public float maxRange = 10f;
     public float minRange = 0.1f;
-    public int numberOfRays = 360; // 1 ray per degree
+    
+    [Header("Scan Range Settings")]
+    [Tooltip("Start angle in degrees (-90 = right side)")]
+    public float startAngleDegrees = -90f;
+    [Tooltip("End angle in degrees (+90 = left side)")]  
+    public float endAngleDegrees = 90f;
+    [Tooltip("Number of rays across the angular range")]
+    public int numberOfRays = 180;
     
     [Header("Visualization")]
     public bool showRays = true;
@@ -57,14 +64,21 @@ public class LidarSensor : MonoBehaviour
         List<float> ranges = new List<float>();
         hitPoints.Clear();
         
-        // Perform all raycasts instantly
+        // Calculate angular range
+        float totalAngleRange = endAngleDegrees - startAngleDegrees;
+        
+        // Perform scan across the specified angle range
         for (int i = 0; i < numberOfRays; i++)
         {
-            // Calculate angle for this ray (0 to 360 degrees)
-            // ROS convention: 0° = forward (X-axis), counterclockwise positive
-            // Unity uses left-handed, ROS uses right-handed - negate angle for correct orientation
-            float angle = -(360f / numberOfRays) * i;
-            float worldAngle = baseYaw + angle;
+            // FIXED: Calculate angle for proper ROS coordinate frame
+            // ROS convention: 0° = forward, positive angles = counterclockwise (left)
+            // For standard 180° LIDAR: -90° (right) to +90° (left)
+            float rosAngle = startAngleDegrees + (totalAngleRange / (numberOfRays - 1)) * i;
+            
+            // Convert ROS angle to Unity world angle
+            // Unity uses clockwise rotation, so negate the ROS angle
+            float unityAngle = -rosAngle;
+            float worldAngle = baseYaw + unityAngle;
             
             // Create ray direction
             Vector3 direction = Quaternion.Euler(0, worldAngle, 0) * Vector3.forward;
@@ -100,6 +114,11 @@ public class LidarSensor : MonoBehaviour
     {
         var timestamp = new TimeStamp(Clock.time);
         
+        // Convert angles to radians
+        float startAngleRad = startAngleDegrees * Mathf.Deg2Rad;
+        float endAngleRad = endAngleDegrees * Mathf.Deg2Rad;
+        float totalAngleRange = endAngleRad - startAngleRad;
+        
         var scanMsg = new LaserScanMsg
         {
             header = new HeaderMsg
@@ -111,9 +130,9 @@ public class LidarSensor : MonoBehaviour
                     nanosec = timestamp.NanoSeconds
                 }
             },
-            angle_min = 0f,                                    // Start at 0° (forward)
-            angle_max = 2f * Mathf.PI,                        // Full 360° in radians
-            angle_increment = (2f * Mathf.PI) / numberOfRays, // Angular step
+            angle_min = startAngleRad,                        // Start angle in radians
+            angle_max = endAngleRad,                          // End angle in radians
+            angle_increment = totalAngleRange / (numberOfRays - 1), // Angular step
             time_increment = 0f,                              // Instant capture
             scan_time = 1f / scanRate,                        // Time between scans
             range_min = minRange,
@@ -138,14 +157,20 @@ public class LidarSensor : MonoBehaviour
             Gizmos.DrawLine(origin, hitPoints[i]);
         }
         
-        // Draw scan circle outline
+        // Draw scan arc outline using proper ROS coordinate frame
         float baseYaw = frameIdObject.transform.eulerAngles.y;
-        Vector3 lastPoint = origin + Quaternion.Euler(0, baseYaw, 0) * Vector3.forward * maxRange;
+        float totalAngleRange = endAngleDegrees - startAngleDegrees;
         
-        for (int i = 1; i <= numberOfRays; i++)
+        // FIXED: Use proper coordinate conversion for visualization
+        float startUnityAngle = -startAngleDegrees;  // Convert ROS to Unity angle
+        Vector3 lastPoint = origin + Quaternion.Euler(0, baseYaw + startUnityAngle, 0) * Vector3.forward * maxRange;
+        
+        int arcSegments = Mathf.Max(10, numberOfRays / 10); // At least 10 segments for smooth arc
+        for (int i = 1; i <= arcSegments; i++)
         {
-            float angle = -(360f / numberOfRays) * i;  // Negate for ROS coordinate system
-            Vector3 direction = Quaternion.Euler(0, baseYaw + angle, 0) * Vector3.forward;
+            float rosAngle = startAngleDegrees + (totalAngleRange / arcSegments) * i;
+            float unityAngle = -rosAngle;  // Convert ROS to Unity angle
+            Vector3 direction = Quaternion.Euler(0, baseYaw + unityAngle, 0) * Vector3.forward;
             Vector3 point = origin + direction * maxRange;
             Gizmos.DrawLine(lastPoint, point);
             lastPoint = point;
