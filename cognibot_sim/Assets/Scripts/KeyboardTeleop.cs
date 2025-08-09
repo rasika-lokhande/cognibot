@@ -38,6 +38,9 @@ public class KeyboardTeleop : MonoBehaviour
             angular = new Vector3Msg(0, 0, angular)
         };
 
-        ros.Publish(topicName, twist);
+        if (linear != 0 || angular != 0)
+        {
+            ros.Publish(topicName, twist);
+        }
     }
 }
