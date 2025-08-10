@@ -10,8 +10,8 @@ public class AGVController : MonoBehaviour
     public GameObject rightWheel;
 
     [Header("Control Parameters")]
-    public float wheelRadius = 0.033f;     // meters
-    public float trackWidth = 0.288f;      // distance between wheels
+    public float wheelRadius = 0.1f;     // meters
+    public float trackWidth = 0.45f;      // distance between wheels
     public float maxLinearSpeed = 2f;      // m/s
     public float maxRotationalSpeed = 1f;  // rad/s
     public float forceLimit = 10f;
