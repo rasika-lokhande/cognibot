@@ -1,7 +1,6 @@
-
 # Cognibot
 
-> Building a cognitive robot with ROS 2 and Unity
+> Exploring Common Coding Theory in Embodied Robotics with ROS 2 and Unity
 
 ---
 
@@ -9,51 +8,79 @@
 
 - [Overview](#overview)
 - [Vision](#vision)
+- [Current Research Focus](#current-research-focus)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Development Goals](#development-goals)
+- [Research Goals](#research-goals)
 - [Contributing](#contributing)
 
 ---
 
 ## Overview
 
-**Cognibot** is an experimental robotics project for developing and testing cognitive architectures in simulated embodied agents. The goal is to incrementally build a cognitive robot that can perceive, reason, act, and adapt in a physically grounded environment.
+**Cognibot** is a cognitive robotics research project exploring **Common Coding Theory** in embodied artificial agents. Unlike traditional robotics architectures that separate perception, planning, and action into distinct modules, this project investigates how shared spatial representations can unify perception and action planning.
 
-The simulation environment is implemented in **Unity** for physics-rich interaction, while **ROS 2** handles the robot's modular control system, sensor integration, and middleware communication. The long-term aim is to enable **situated cognition**—embedding perception, memory, action, and decision-making within a real-time, embodied context.
+The project implements the **Theory of Event Coding (TEC)** and **HiTEC** computational model principles in a simulated differential drive robot using **Unity** for physics simulation and **ROS 2** for cognitive architecture implementation.
 
 ---
 
 ## Vision
 
-The Cognibot project explores one central question:
+The Cognibot project explores a fundamental question in cognitive robotics:
 
-> **"What does it mean to give cognition to a robot that exists in the world?"**
+> **"Can robots achieve more natural, adaptive behavior by using shared representations for perception and action, rather than traditional sense-plan-act pipelines?"**
 
-This repository lays the foundation for:
-- A modular, extensible cognitive architecture for robots
-- Embodied interaction in a physically grounded 3D environment
-- Continuous integration of higher-level cognitive capabilities (like planning, learning, internal simulation, and goal-driven behavior)
+This research investigates:
+- **Common Coding Theory**: Spatial features that simultaneously represent perceptual information and action possibilities
+- **Ideomotor Learning**: How robots can learn action-effect associations through experience
+- **Embodied Spatial Cognition**: Action-oriented perception in real-time robotic systems
+- **Perception-Action Coupling**: Integration of spatial awareness with movement planning
 
-The robot is expected to evolve from simple reactive behaviors to more sophisticated, memory- and inference-driven autonomy.
+---
+
+## Current Research Focus
+
+### Common Coding Implementation
+
+The project currently demonstrates **common coding principles** through:
+
+- **Spatial Feature Codes**: Unified representations for spatial relationships (e.g., "ForwardClear", "LeftOpen", "RightOpen")
+- **Shared Perception-Action Representations**: The same neural codes that process spatial perception also bias action selection
+- **Competitive Feature Dynamics**: Attention-like mechanisms where spatial features compete for activation
+- **Task-Driven Modulation**: How current goals influence spatial perception and action planning
+
+### Key Insights Being Explored
+
+- How spatial perception can be inherently action-oriented rather than descriptive
+- Whether shared representations lead to more fluid, natural robotic behavior
+- The role of attention and competition in spatial cognition
+- Scalability of learned vs. hardcoded feature representations
 
 ---
 
 ## Features
 
-- ✅ Unity-based 3D simulation with physics-enabled environments
-- ✅ ROS 2 communication bridge for control and sensing
+- ✅ Unity-based 3D simulation with configurable LIDAR sensor
+- ✅ ROS 2 communication bridge for real-time control and sensing
+- ✅ **Common Coding Architecture**: Spatial feature processing with shared perception-action representations
+- ✅ **Configurable LIDAR**: Adjustable scan range and resolution for spatial perception experiments
+- ✅ **Feature Code Processing**: Real-time spatial relationship detection and activation
+- ✅ **Competitive Dynamics**: Lateral inhibition between spatial features
+- ✅ **Task Context Integration**: Goal-driven attention weighting of spatial features
+- 🔄 **Ideomotor Learning**: Adaptive action-effect association learning (in development)
 
 ---
 
 ## Tech Stack
 
-- **Simulation**: Unity 6.0 (6000.0.54f1) LTS with ROS TCP Connector and URDF Importer packages.
+- **Simulation**: Unity 6.0 (6000.0.54f1) LTS with ROS TCP Connector
 - **Middleware**: ROS 2 Jazzy on Ubuntu 24.04
-- **Languages**: C#, Python, XML (URDF/Xacro)
+- **Cognitive Architecture**: Python-based common coding implementation
+- **Languages**: C# (Unity), Python (ROS 2), XML (URDF/Launch files)
+- **Research Framework**: Based on Theory of Event Coding (TEC) and HiTEC computational model
 
 ---
 
@@ -63,6 +90,7 @@ The robot is expected to evolve from simple reactive behaviors to more sophistic
 
 - Unity 6.0 LTS (or compatible)
 - ROS 2 Jazzy (installed on Ubuntu 24.04)
+- Python packages: numpy, rclpy
 
 ### Clone Repository
 
@@ -71,33 +99,50 @@ git clone https://github.com/rasika-lokhande/cognibot.git --recurse-submodules
 cd cognibot
 ```
 
+### Build ROS 2 Workspace
+
+```bash
+cd ros2_ws
+colcon build --packages-select cognibot_interfaces cognibot_common_coding
+source install/setup.bash
+```
+
 ---
 
 ## Usage
 
-### In ROS 2
+### Running the Common Coding Experiment
 
 ```bash
-# Build and Source your ROS 2 workspace
-cd cognibot # or path to the cognibot directory
-colcon build
-source install/setup.bash
+# Terminal 1: Launch the cognitive architecture
+ros2 launch cognibot_bringup cognibot_common_coding.launch.xml
 
-# Launch 
-ros2 launch cognibot_bringup  cognibot_unity.launch.xml
-```
+# Terminal 2: Start the LIDAR feature processor
+ros2 run cognibot_common_coding lidar_processor
 
-```bash
-# Send velocity commands (to test)
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+# Terminal 3: Monitor spatial feature activations
+ros2 topic echo /feature_codes
+
+# Terminal 4: Optional - Monitor LIDAR data
+ros2 topic echo /scan
 ```
 
 ### In Unity
 
-1. Open the `cognibot_sim` Unity project in Unity Hub
-2. Ensure the `ROSConnection` component is configured to match your ROS IP/port
-3. Press **Play** to simulate
-4. Use ROS to control the robot; Unity will simulate motion and physics
+1. Open the `cognibot_sim` Unity project
+2. Configure LIDAR parameters in the Inspector:
+   - **Start Angle**: -90° (standard 180° LIDAR)
+   - **End Angle**: +90°
+   - **Number of Rays**: 180
+3. Press **Play** to start simulation
+4. Observe real-time spatial feature activation based on robot's environment
+
+### Experimental Scenarios
+
+- **Corridor Navigation**: Test how the robot perceives and responds to narrow passages
+- **Opening Detection**: Observe activation of "LeftOpen" and "RightOpen" features
+- **Obstacle Avoidance**: Monitor "ForwardClear" feature in cluttered environments
+- **Task Context Effects**: Compare feature activations under different goal contexts
 
 ---
 
@@ -105,51 +150,96 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 ```
 cognibot/
-├── ros2_ws/                            # ROS2 workspace
+├── ros2_ws/                                    # ROS2 workspace
 │   ├── src/
-│   │   └── cognibot_description/       # URDF, xacro, display launch files
-│   │   └── cognibot_bringup/           # Launch and config for ROS control
-|   ├── .gitignore                      # gitignore file specific to ROS2 workspace
-├── cognibot_sim/                       # Unity project folder
-│   ├── Assets/                         # Unity Project Assets
-|   ├── .gitignore                      # gitignore file specific to Unity project
-├── docs/                               # Notes, design, cognitive architecture sketches
+│   │   ├── cognibot_interfaces/                # Custom message definitions for feature codes
+│   │   ├── cognibot_common_coding/             # Common coding implementation
+│   │   │   ├── src/
+│   │   │   │   ├── lidar_processor.py          # Spatial feature extraction and activation
+│   │   │   │   ├── task_manager.py             # Task context and attention modulation
+│   │   │   │   └── common_coding_controller.py # Integrated perception-action system
+│   │   ├── cognibot_description/               # URDF, robot description
+│   │   └── cognibot_bringup/                   # Launch files and configurations
+├── cognibot_sim/                               # Unity simulation environment
+│   ├── Assets/
+│   │   ├── Scripts/
+│   │   │   ├── LidarSensor.cs                  # Configurable LIDAR implementation
+│   │   │   └── DifferentialDriveController.cs # Robot movement controller
+│   │   └── Scenes/
+│   │       └── CommonCodingTestEnvironment.unity # Test environment for experiments
+├── docs/                                       # Research documentation
+│   ├── common_coding_theory.md                 # Theoretical background
+│   ├── experiment_results.md                   # Experimental findings
+│   └── cognitive_architecture_design.md        # Architecture documentation
 └── README.md
 ```
 
 ---
 
-## Development Goals
+## Research Goals
 
-The project follows an incremental roadmap:
+### Current Phase: Common Coding Foundation (🔄 In Progress)
 
-### Phase 1: Reactive Robot (✔️ In Progress)
+* ✅ Implement spatial feature codes with shared perception-action representations
+* ✅ Demonstrate competitive dynamics between spatial features
+* ✅ Configurable LIDAR sensor for spatial perception experiments
+* 🔄 Task-driven attention and feature weighting
+* 🔄 Ideomotor learning of action-effect associations
 
-* Unity ↔ ROS bridge
-* Differential drive base
-* Basic sensor inputs (odom, IMU)
-* Teleoperation and simple behaviors
+### Next Phase: Advanced Common Coding
 
-### Phase 2: Architecture Integration
+* Hierarchical spatial feature development
+* Learned vs. hardcoded feature emergence
+* Multi-modal sensor integration (vision + LIDAR)
+* Temporal sequence learning and prediction
+* Complex environment navigation using common coding principles
 
-* Implement modular perception, memory, and action layers
-* Encode beliefs, goals, and internal states
-* Unity ↔ ROS ↔ Architecture message flow
+### Future Phase: Cognitive Architecture Integration
 
-### Phase 3: Prospective Cognition
+* Memory integration with spatial feature codes
+* Goal-driven task switching and attention
+* Internal simulation using learned spatial representations
+* Meta-cognitive monitoring of spatial perception-action coupling
 
-* Goal-driven planning and execution
-* Internal simulation of possible actions
-* Interaction with dynamic environments
+---
+
+## Research Context
+
+This project is inspired by:
+
+- **Theory of Event Coding (TEC)** by Hommel et al. (2001)
+- **HiTEC computational model** by Haazebroek et al. (2011)
+- **Ideomotor Theory** and action-effect learning principles
+- **Embodied Cognition** research in cognitive science
+- **Active Perception** and enactive approaches to robotics
+
+### Publications and References
+
+Key papers informing this implementation:
+- Haazebroek, P., van Dantzig, S., & Hommel, B. (2011). A computational model of perception and action for cognitive robotics. *Cognitive Processing*, 12(4), 355-365.
+- Hommel, B., Müsseler, J., Aschersleben, G., & Prinz, W. (2001). The theory of event coding (TEC): A framework for perception and action planning. *Behavioral and Brain Sciences*, 24(5), 849-878.
 
 ---
 
 ## Contributing
 
-This is a personal research project but contributions, suggestions, or discussions are welcome! Please:
+This is an active cognitive robotics research project. Contributions and collaborations are welcome!
 
-* Open an issue for bugs, feature ideas, or questions
-* Submit a pull request with clear descriptions and testing instructions
+**Research Interests:**
+- Common coding theory implementation
+- Spatial cognition and robotics
+- Embodied artificial intelligence
+- Perception-action coupling
+
+**How to Contribute:**
+- Open issues for theoretical discussions or implementation questions
+- Submit pull requests with experimental improvements
+- Share experimental results or alternative implementation approaches
+- Suggest new test scenarios for common coding validation
+
+**Research Collaboration:**
+If you're interested in collaborative research on common coding or embodied cognition in robotics, please reach out through GitHub issues or email.
 
 ---
 
+*"The same neural codes that help you perceive a coffee cup's handle also prepare your hand to grasp it. Can we build robots that work the same way?"*
