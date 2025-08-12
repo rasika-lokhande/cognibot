@@ -13,8 +13,8 @@
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Current Implementation Status](#current-implementation-status)
-- [Research Goals](#research-goals)
+- [Current Capabilities](#current-capabilities)
+- [References](#references)
 - [Contributing](#contributing)
 
 ---
