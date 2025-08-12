@@ -10,12 +10,6 @@ feature_codes_list = [
     "RightOpen"
 ]
 
-action_biases = {
-        'ForwardClear': {'linear': 1.2, 'angular': 0.0},
-        'LeftOpen': {'linear': 0.0, 'angular': 0.8},
-        'RightOpen': {'linear': 0.0, 'angular': 0.8}
-    }
-
 
 class LidarProcessor(Node):
     """Process LIDAR data to extract features """
@@ -35,8 +29,6 @@ class LidarProcessor(Node):
             code.action_bias = 0.0
             code.task_weight = 1.0
 
-        # Action biases - how strongly each spatial feature would suggest specific actions
-        self.action_biases = action_biases
 
         #subscribe to LIDAR data
         self.lidar_sub = self.create_subscription(
@@ -46,7 +38,7 @@ class LidarProcessor(Node):
         self.feature_pub = self.create_publisher(
             FeatureCodeArray, '/feature_codes', 10)
         
-        self.get_logger().info("LIDAR Processor initialized - Common coding spatial feature extraction ready!")
+       
         
 
 
@@ -80,7 +72,7 @@ class LidarProcessor(Node):
         # Calculate perceptual evidence for each spatial feature
         # These represent how strongly the current spatial configuration supports each action-relevant feature
         
-        # Simple and robust
+        
         normalization_factor = msg.range_max * 0.5  # 50% of max range = full evidence
 
         self.feature_codes['ForwardClear'].perceptual_evidence = \
@@ -91,12 +83,12 @@ class LidarProcessor(Node):
             min(1.0, np.max(right_ranges) / normalization_factor)
 
 
-        self.get_logger().info(f"Perceptual evidence: ForwardClear={self.feature_codes['ForwardClear'].perceptual_evidence}, "
-                                    f"LeftOpen={self.feature_codes['LeftOpen'].perceptual_evidence}, "
-                                    f"RightOpen={self.feature_codes['RightOpen'].perceptual_evidence}")
+        # self.get_logger().info(f"Perceptual evidence: ForwardClear={self.feature_codes['ForwardClear'].perceptual_evidence}, "
+        #                             f"LeftOpen={self.feature_codes['LeftOpen'].perceptual_evidence}, "
+        #                             f"RightOpen={self.feature_codes['RightOpen'].perceptual_evidence}")
 
-        self.get_logger().info(f"LIDAR: {len(ranges)} points, max_range: {msg.range_max}")
-        self.get_logger().info(f"Sectors: front={len(front_ranges)}, left={len(left_ranges)}, right={len(right_ranges)}")
+        # self.get_logger().info(f"LIDAR: {len(ranges)} points, max_range: {msg.range_max}")
+        # self.get_logger().info(f"Sectors: front={len(front_ranges)}, left={len(left_ranges)}, right={len(right_ranges)}")
       
 
 
@@ -108,7 +100,7 @@ class LidarProcessor(Node):
     def activate_features(self):
         """Calculate activation levels by integrating perceptual evidence with action biases"""
         
-        # Calculate activation levels based on perceptual evidence and other factos (TO DO)
+        # Calculate activation levels based on perceptual evidence and other factors (TO DO)
         for name, code in self.feature_codes.items():
             code.activation_level = code.perceptual_evidence 
 
@@ -127,22 +119,11 @@ class LidarProcessor(Node):
         self.feature_pub.publish(msg)
             
     
-    
-        
-       
-
-
-
-
-    
-
-
-
-
 
 def main(args=None):
     rclpy.init(args=args)
     node = LidarProcessor()
+    node.get_logger().info("LIDAR Processor node started")
     
     try:
         rclpy.spin(node)

@@ -16,11 +16,6 @@ class ActionExecutor(Node):
     def __init__(self):
         super().__init__('action_executor')
 
-      
-        
-
-        # Current feature states
-        self.current_features = {}
         
         # Subscribe to feature codes
         self.feature_sub = self.create_subscription(
@@ -29,23 +24,14 @@ class ActionExecutor(Node):
         # Publish motor commands
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
         
-        self.get_logger().info("Action Executor started - Competition-based action selection!")
-        
-      
+
 
     def feature_callback(self, msg: FeatureCodeArray):
         """Receive feature codes and generate motor commands"""
-      
-
-    
-           
-    
+ 
         max_feature = max(msg.feature_codes, key=lambda feature: feature.activation_level)
-        print(f"Feature '{max_feature.feature_name}' has max activation: {max_feature.activation_level}")
-
-
+        # print(f"Feature '{max_feature.feature_name}' has max activation: {max_feature.activation_level}")
         # TO DO: Apply competition-based action selection
-        
 
         # Generate action from feature activations
         self.execute_action(msg.feature_codes)
@@ -75,23 +61,6 @@ class ActionExecutor(Node):
 
         self.cmd_vel_pub.publish(cmd)
 
-
-
-
-
-    # def execute_action(self, max_activated_feature):
-    #     """Generate motor commands from feature activations (ideomotor control)"""
-        
-    #     cmd = Twist()
-
-    #     action = self.current_features[max_activated_feature]
-
-    #     if action:
-    #         # Map action to motor commands
-    #         cmd.linear.x = action_biases[max_activated_feature]['linear']
-    #         cmd.angular.z = action_biases[max_activated_feature]['angular']
-
-    #     self.cmd_vel_pub.publish(cmd)
 
 
 
