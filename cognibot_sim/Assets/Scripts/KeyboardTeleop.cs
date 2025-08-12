@@ -4,11 +4,11 @@ using RosMessageTypes.Geometry;
 
 public class KeyboardTeleop : MonoBehaviour
 {
-    public float linearSpeed = 0.5f;
-    public float angularSpeed = 1.0f;
+    [SerializeField] private float linearSpeed = 0.5f;
+    [SerializeField] private float angularSpeed = 1.0f;
+    [SerializeField] private string topicName = "/cmd_vel";
 
     private ROSConnection ros;
-    private string topicName = "/cmd_vel";
 
     void Start()
     {
@@ -18,24 +18,16 @@ public class KeyboardTeleop : MonoBehaviour
 
     void Update()
     {
-        float linear = 0f;
-        float angular = 0f;
+        float linear = Input.GetAxisRaw("Vertical") * linearSpeed;
+        float angular = -Input.GetAxisRaw("Horizontal") * angularSpeed;
 
-        if (Input.GetKey(KeyCode.W))
-            linear = linearSpeed;
-        if (Input.GetKey(KeyCode.S))
-            linear = -linearSpeed;
-        if (Input.GetKey(KeyCode.A))
-            angular = angularSpeed;
-        if (Input.GetKey(KeyCode.D))
-            angular = -angularSpeed;
-
-        TwistMsg twist = new TwistMsg
+        if (linear != 0 || angular != 0)
         {
-            linear = new Vector3Msg(linear, 0, 0),
-            angular = new Vector3Msg(0, 0, angular)
-        };
-
-        ros.Publish(topicName, twist);
+            ros.Publish(topicName, new TwistMsg
+            {
+                linear = new Vector3Msg(linear, 0, 0),
+                angular = new Vector3Msg(0, 0, angular)
+            });
+        }
     }
 }

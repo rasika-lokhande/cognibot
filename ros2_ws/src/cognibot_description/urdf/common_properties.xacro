@@ -23,6 +23,9 @@
     <material name="camera">
         <color rgba="1 1 0 1"/>
     </material>
+    <material name="lidar">
+        <color rgba="1 1 0 1"/>
+    </material>
 
 
     <xacro:macro name="box_inertial" params="m x y z o_xyz o_rpy">
