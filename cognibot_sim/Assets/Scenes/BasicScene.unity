@@ -225,8 +225,8 @@ Transform:
   m_GameObject: {fileID: 237165399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.99, y: 0, z: 1.06}
-  m_LocalScale: {x: 1, y: 0.99235, z: 3.423255}
+  m_LocalPosition: {x: 3.99, y: 0, z: 0.14}
+  m_LocalScale: {x: 1, y: 0.99235, z: 6.5155826}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 994116687}
@@ -2679,7 +2679,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 1
-  m_ParentAnchorPosition: {x: 0.22500002, y: 0, z: -0.1500001}
+  m_ParentAnchorPosition: {x: 0.2249999, y: 0, z: -0.1500001}
   m_ParentAnchorRotation: {x: 90, y: 0, z: 0, w: 1}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 90, y: 0, z: 0, w: 1}
@@ -3127,7 +3127,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.22500002, y: 0, z: -0.1500001}
+  m_ParentAnchorPosition: {x: -0.2249999, y: 0, z: -0.1500001}
   m_ParentAnchorRotation: {x: 90, y: 0, z: 0, w: 1}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 90, y: 0, z: 0, w: 1}
@@ -3948,7 +3948,7 @@ Transform:
   m_GameObject: {fileID: 8887481747030288127}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.53, y: 0, z: 3.77}
+  m_LocalPosition: {x: 3.77, y: 0, z: 3.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4417,6 +4417,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3855777288236301877}
   - component: {fileID: 6686334381564862394}
+  - component: {fileID: 6686334381564862395}
   m_Layer: 0
   m_Name: AGV Controller
   m_TagString: Untagged
@@ -4440,13 +4441,36 @@ MonoBehaviour:
   rightWheel: {fileID: 801338797962751352}
   wheelRadius: 0.1
   trackWidth: 0.45
-  maxLinearSpeed: 2
+  maxLinearSpeed: 1
   maxRotationalSpeed: 1
   forceLimit: 1000
   damping: 10
   stiffness: 10000
   topicName: /cmd_vel
   rosTimeout: 0.5
+--- !u!114 &6686334381564862395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6686334381564862393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d6c6df0d08dc5ad7854683bbc4aa5d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  publishInterval: 0.02
+  useFixedTimeStep: 1
+  odomTopic: /odom
+  odomFrame: odom
+  baseFrame: base_link
+  positionCovariance: 0.001
+  orientationCovariance: 0.0001
+  velocityCovariance: 0.01
+  useRealisticNoise: 0
+  wheelSlipFactor: 0.02
+  encoderNoise: 0.001
 --- !u!114 &6695799979460051513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4886,7 +4910,6 @@ GameObject:
   - component: {fileID: 4988006422240270944}
   - component: {fileID: 8887481747030288128}
   - component: {fileID: 8887481747030288130}
-  - component: {fileID: 8887481747030288129}
   m_Layer: 0
   m_Name: Mobile Robot
   m_TagString: Untagged
@@ -4913,19 +4936,6 @@ MonoBehaviour:
   - jointName: base_right_wheel_joint
     jointBody: {fileID: 957597241004530113}
   publishMessageFrequency: 0.5
---- !u!114 &8887481747030288129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8887481747030288127}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0d839ec73c9a471396e25fbee47b08d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sampleSize: 100
 --- !u!114 &8887481747030288130
 MonoBehaviour:
   m_ObjectHideFlags: 0

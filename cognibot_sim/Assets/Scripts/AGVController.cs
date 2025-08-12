@@ -12,7 +12,7 @@ public class AGVController : MonoBehaviour
     [Header("Control Parameters")]
     public float wheelRadius = 0.1f;     // meters
     public float trackWidth = 0.45f;      // distance between wheels
-    public float maxLinearSpeed = 2f;      // m/s
+    public float maxLinearSpeed = 1f;      // m/s
     public float maxRotationalSpeed = 1f;  // rad/s
     public float forceLimit = 10f;
     public float damping = 10f;
@@ -158,20 +158,5 @@ public class AGVController : MonoBehaviour
         }
     }
 
-    // Helper method for debugging
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    void OnDrawGizmos()
-    {
-        if (leftWheel != null && rightWheel != null)
-        {
-            // Draw track width
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(leftWheel.transform.position, rightWheel.transform.position);
-            
-            // Draw wheel radii
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(leftWheel.transform.position, wheelRadius);
-            Gizmos.DrawWireSphere(rightWheel.transform.position, wheelRadius);
-        }
-    }
+    
 }
