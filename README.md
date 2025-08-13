@@ -1,15 +1,13 @@
+# Cognibot
 [![ROS2](https://img.shields.io/badge/ROS2-Jazzy-blue)]() [![Unity](https://img.shields.io/badge/Unity-6.0-green)]() [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-orange)]()
 
-# Cognibot
-
-> Traditional robots struggle with dynamic, unstructured environments because they separate perception ("what do I see?") from action ("what should I do?"). Cognitive science suggests biological agents succeed because they use shared representations—the same neural codes for seeing and acting. This project explores whether robots can achieve similar adaptability.
+Traditional robots struggle with dynamic, unstructured environments because they separate perception ("what do I see?") from action ("what should I do?"). Cognitive science suggests biological agents succeed because they use shared representations—the same neural codes for seeing and acting. This project explores whether robots can achieve similar adaptability.
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Vision](#vision)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -21,27 +19,13 @@
 
 ## Overview
 
-**Cognibot** is a cognitive robotics project exploring **Theory of Event Coding** in embodied artificial agents. Unlike traditional robotics architectures that separate perception, planning, and action into distinct modules, this project investigates how shared representations can unify perception and action planning. 
+**Cognibot** is a cognitive robotics project exploring the concept of shared representations in embodied artificial agents. Unlike traditional robotics architectures that separate perception, planning, and action into distinct modules, this project explores how shared representations can unify perception and action planning.
 
-The project implements the **Theory of Event Coding (TEC)** and **HiTEC** computational model principles in a simulated differential drive robot using **Unity** for physics simulation and **ROS 2** for cognitive architecture implementation.
-
----
-
-## Vision
-
-This project will (eventually) attempt to explore the following concepts:
-- **Shared Perception-Action Representations**: Features that simultaneously represent perceptual information and action possibilities
-- **Ideomotor Learning**: How robots can learn action-effect associations through experience
-- **Active Perception**: How robots can use sensorimotor interactions to actively explore and learn about their environment
-- **Task driven modulation**: How current goals influence event coding
-- **Reward driven modulation**: How rewards and internal drives can modulate event coding
-- **Semantic Grounding**: How can meaning be generated through these sensorimotor associations?
-- **Attention driven modulation**: How can attention mechanisms influence event coding?
-- **Hierarchical Feature Development**: How can robots learn complex features through hierarchical representations?
-- **Multi-modal Integration**: How can robots integrate multiple sensor modalities (e.g., vision, LIDAR) into a unified coding framework?
-- **Metacognitive Monitoring**: How can robots monitor their own cognitive processes and adapt their behavior accordingly?
+The project is a proof of concept prototype implementation, inspired by the **Theory of Event Coding (TEC)** (Hommel et al., 2001) and **HiTEC** computational model (Haazebroek et al., 2011) principles in a simulated differential drive robot using **Unity** for physics simulation and **ROS 2** for cognitive architecture implementation.
 
 ---
+
+
 
 ## Tech Stack
 
@@ -92,9 +76,11 @@ source install/setup.bash
 2. Launch the ROS 2 nodes to connect Unity with the cognitive architecture
 ```bash
 # Terminal 1: Launch the cognitive architecture
+
 cd cognibot/ros2_ws
 source install/setup.bash
 ros2 launch cognibot_bringup cognibot_unity.launch.xml 
+
 # This launches the ROS 2 nodes, connects to Unity, and opens Rviz for visualization
 ```
 3. Monitor feature activations 
@@ -123,16 +109,16 @@ cognibot/
 │   │   ├── Scripts/
 │   │   │   ├── LidarSensor.cs                  # Configurable LIDAR implementation
 │   │   │   └── AGVController.cs                 # Robot movement controller
+├── docs/                                        # Documentation
+│   ├── ideas.md                                 # Project ideas and concepts
 └── README.md
 ```
 
 ---
 
-
 ## Current Capabilities
-- **Obstacle Avoidance**: A simple mobile robot navigates cluttered environments using spatial feature codes
-- **Feature Activation**: Real-time logs of which perceptual features drive behavior
 - **Sensorimotor Integration**: Direct coupling between LIDAR perception and motor actions
+- **Feature driven navigation**: A simple mobile robot navigates simple environments using spatial feature codes
 
 
 ### ✅ Completed
@@ -145,10 +131,10 @@ cognibot/
 - [x] Motor command execution: Basic motor commands based on feature codes
 - [x] ROS 2 message definitions: Custom messages for feature codes
 - [x] Basic cognitive architecture: ROS 2 nodes for feature processing and action execution
-- [x] Reactive navigation: Obstacle avoidance using feature activation
+- [x] Reactive navigation: Obstacle avoidance using weighted feature activation
 
 ### 🔄 In Progress
-- [ ] HiTEC neural dynamics: Competition, lateral inhibition, activation equations
+- [ ] HiTEC neural dynamics: Competition, lateral inhibition, activation 
 - [ ] Task context system: Goal-directed attention and feature modulation
 
 ### 📋 Next steps
@@ -167,16 +153,7 @@ cognibot/
 
 ## Contributing
 
-This is an active cognitive robotics experimental project. Contributions and collaborations are welcome!
-
-**How to Contribute:**
-- Open issues for theoretical discussions or implementation questions
-- Submit pull requests with experimental improvements
-- Share alternative implementation approaches
-- **Most importantly, critique the implementation and suggest improvements!**
-
-**Collaboration:**
-If you're interested in collaborative work on cognitive architectures in robotics, please reach out through GitHub issues or email.
+This is an active cognitive robotics experimental project. Contributions, collaborations, and feedback are welcome!
 
 ---
 
