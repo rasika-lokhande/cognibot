@@ -1,0 +1,15 @@
+<launch>
+   
+
+
+  
+
+    <node pkg="common_coding" exec="lidar_processor" output="screen">
+        <param name="use_sim_time" value="true"/>
+    </node>
+    <node pkg="common_coding" exec="action_executor" output="screen">
+        <param name="use_sim_time" value="true"/>
+    </node>
+
+
+</launch>

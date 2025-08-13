@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using RosMessageTypes.Geometry;
@@ -7,101 +6,139 @@ using RosMessageTypes.Tf2;
 using Unity.Robotics.Core;
 using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
-using Unity.Robotics.SlamExample;
 using UnityEngine;
 
+/// <summary>
+/// Publishes transform tree for robot links. Handles base_footprint -> base_link relationship.
+/// </summary>
 public class ROSTransformTreePublisher : MonoBehaviour
 {
-    const string k_TfTopic = "/tf";
+    [Header("Publishing Settings")]
+    [SerializeField, Tooltip("Transform publishing rate in Hz")]
+    private float publishRate = 20f;
     
-    [SerializeField]
-    double m_PublishRateHz = 20f;
-    [SerializeField]
-    List<string> m_GlobalFrameIds = new List<string> { "map", "odom" };
-    [SerializeField]
-    GameObject m_RootGameObject;
+    [SerializeField, Tooltip("ROS topic for transform messages")]
+    private string tfTopic = "/tf";
     
-    double m_LastPublishTimeSeconds;
+    [Header("Frame Configuration")]
+    [SerializeField, Tooltip("Enable map and odom frames for navigation")]
+    private bool useGlobalFrames = false;
+    
+    [SerializeField, Tooltip("Global frame IDs (map, odom)")]
+    private List<string> globalFrameIds = new List<string> { "map", "odom" };
+    
+    [SerializeField, Tooltip("Root GameObject (use base_footprint for proper robot setup)")]
+    private GameObject rootGameObject;
 
-    TransformTreeNode m_TransformRoot;
-    ROSConnection m_ROS;
+    private double lastPublishTime;
+    private TransformTreeNode transformRoot;
+    private ROSConnection ros;
 
-    double PublishPeriodSeconds => 1.0f / m_PublishRateHz;
+    private double PublishPeriod => 1.0 / publishRate;
+    private bool ShouldPublish => Clock.NowTimeInSeconds > lastPublishTime + PublishPeriod;
 
-    bool ShouldPublishMessage => Clock.NowTimeInSeconds > m_LastPublishTimeSeconds + PublishPeriodSeconds;
-
-    // Start is called before the first frame update
     void Start()
     {
-        if (m_RootGameObject == null)
-        {
-            Debug.LogWarning($"No GameObject explicitly defined as {nameof(m_RootGameObject)}, so using {name} as root.");
-            m_RootGameObject = gameObject;
-        }
-
-        m_ROS = ROSConnection.GetOrCreateInstance();
-        m_TransformRoot = new TransformTreeNode(m_RootGameObject);
-        m_ROS.RegisterPublisher<TFMessageMsg>(k_TfTopic);
-        m_LastPublishTimeSeconds = Clock.time + PublishPeriodSeconds;
-    }
-
-    static void PopulateTFList(List<TransformStampedMsg> tfList, TransformTreeNode tfNode)
-    {
-        // TODO: Some of this could be done once and cached rather than doing from scratch every time
-        // Only generate transform messages from the children, because This node will be parented to the global frame
-        foreach (var childTf in tfNode.Children)
-        {
-            tfList.Add(TransformTreeNode.ToTransformStamped(childTf));
-
-            if (!childTf.IsALeafNode)
-            {
-                PopulateTFList(tfList, childTf);
-            }
-        }
-    }
-
-    void PublishMessage()
-    {
-        var tfMessageList = new List<TransformStampedMsg>();
-
-        if (m_GlobalFrameIds.Count > 0)
-        {
-            var tfRootToGlobal = new TransformStampedMsg(
-                new HeaderMsg(new TimeStamp(Clock.time), m_GlobalFrameIds.Last()),
-                m_TransformRoot.name,
-                m_TransformRoot.Transform.To<FLU>());
-            tfMessageList.Add(tfRootToGlobal);
-        }
-        else
-        {
-            Debug.LogWarning($"No {m_GlobalFrameIds} specified, transform tree will be entirely local coordinates.");
-        }
-        
-        // In case there are multiple "global" transforms that are effectively the same coordinate frame, 
-        // treat this as an ordered list, first entry is the "true" global
-        for (var i = 1; i < m_GlobalFrameIds.Count; ++i)
-        {
-            var tfGlobalToGlobal = new TransformStampedMsg(
-                new HeaderMsg(new TimeStamp(Clock.time), m_GlobalFrameIds[i - 1]),
-                m_GlobalFrameIds[i],
-                // Initializes to identity transform
-                new TransformMsg());
-            tfMessageList.Add(tfGlobalToGlobal);
-        }
-
-        PopulateTFList(tfMessageList, m_TransformRoot);
-
-        var tfMessage = new TFMessageMsg(tfMessageList.ToArray());
-        m_ROS.Publish(k_TfTopic, tfMessage);
-        m_LastPublishTimeSeconds = Clock.FrameStartTimeInSeconds;
+        InitializeRoot();
+        InitializeROS();
     }
 
     void Update()
     {
-        if (ShouldPublishMessage)
-        {
-            PublishMessage();
-        }
+        if (ShouldPublish)
+            PublishTransforms();
+    }
 
+    private void InitializeRoot()
+    {
+        if (!rootGameObject)
+        {
+            // Auto-find base_footprint or fallback to this GameObject
+            rootGameObject = FindRootGameObject();
+            Debug.Log($"Using {rootGameObject.name} as transform root");
+        }
+        
+        transformRoot = new TransformTreeNode(rootGameObject);
+    }
+
+    private GameObject FindRootGameObject()
+    {
+        // Look for base_footprint first (proper robot convention)
+        var baseFootprint = GameObject.Find("base_footprint");
+        if (baseFootprint) return baseFootprint;
+        
+        // Fallback to base_link
+        var baseLink = GameObject.Find("base_link");
+        if (baseLink) return baseLink;
+        
+        // Last resort - use this GameObject
+        Debug.LogWarning("Could not find base_footprint or base_link, using current GameObject");
+        return gameObject;
+    }
+
+    private void InitializeROS()
+    {
+        ros = ROSConnection.GetOrCreateInstance();
+        ros.RegisterPublisher<TFMessageMsg>(tfTopic);
+        lastPublishTime = Clock.time + PublishPeriod;
+    }
+
+    private void PublishTransforms()
+    {
+        var transformList = new List<TransformStampedMsg>();
+        
+        // Add global frames if enabled
+        if (useGlobalFrames && globalFrameIds.Count > 0)
+        {
+            AddGlobalFrameTransforms(transformList);
+        }
+        
+        // Add all child transforms
+        PopulateChildTransforms(transformList, transformRoot);
+        
+        // Publish the complete transform tree
+        var tfMessage = new TFMessageMsg(transformList.ToArray());
+        ros.Publish(tfTopic, tfMessage);
+        lastPublishTime = Clock.FrameStartTimeInSeconds;
+    }
+
+    private void AddGlobalFrameTransforms(List<TransformStampedMsg> transformList)
+    {
+        // Root to global frame (e.g., base_footprint -> odom)
+        var rootToGlobal = new TransformStampedMsg(
+            new HeaderMsg(new TimeStamp(Clock.time), globalFrameIds.Last()),
+            transformRoot.name,
+            transformRoot.Transform.To<FLU>()
+        );
+        transformList.Add(rootToGlobal);
+        
+        // Chain global frames (e.g., odom -> map)
+        for (int i = 1; i < globalFrameIds.Count; i++)
+        {
+            var globalChain = new TransformStampedMsg(
+                new HeaderMsg(new TimeStamp(Clock.time), globalFrameIds[i - 1]),
+                globalFrameIds[i],
+                new TransformMsg() // Identity transform
+            );
+            transformList.Add(globalChain);
+        }
+    }
+
+    private static void PopulateChildTransforms(List<TransformStampedMsg> transformList, TransformTreeNode node)
+    {
+        foreach (var child in node.Children)
+        {
+            transformList.Add(TransformTreeNode.ToTransformStamped(child));
+            
+            if (!child.IsALeafNode)
+                PopulateChildTransforms(transformList, child);
+        }
+    }
+
+    [ContextMenu("Find Base Footprint")]
+    private void FindBaseFootprint()
+    {
+        rootGameObject = FindRootGameObject();
+        Debug.Log($"Set root to: {rootGameObject.name}");
     }
 }

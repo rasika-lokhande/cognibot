@@ -5,7 +5,7 @@ using Unity.Robotics.Core;
 using Unity.Robotics.UrdfImporter;
 using UnityEngine;
 
-namespace Unity.Robotics.SlamExample
+namespace Unity.Robotics.Core
 {
     class TransformTreeNode
     {

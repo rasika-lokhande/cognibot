@@ -1,55 +1,27 @@
 using UnityEngine;
 
 /// <summary>
-/// Configures Unity for consistent simulation performance:
-/// - Locks frame rate
-/// - Disables VSync
-/// - Sets physics timestep
-/// - Optionally displays real-time FPS in top-right corner
+/// Configures Unity for consistent simulation performance
 /// </summary>
 public class SimulationPerformanceConfig : MonoBehaviour
 {
-    [Header("Frame Settings")]
-    public int targetFrameRate = 60;
+    [SerializeField] private int targetFrameRate = 60;
+    [SerializeField] private float fixedTimestep = 0.02f;
+    [SerializeField] private float maxTimestep = 0.05f;
+    [SerializeField] private bool showFPS = true;
 
-    [Header("Physics Settings")]
-    public float fixedTimestep = 0.02f;         // 50 Hz
-    public float maxAllowedTimestep = 0.05f;    // Cap max physics step time
-
-    [Header("Debug")]
-    public bool showFPS = true;
-
-    private GUIStyle fpsStyle;
-
-    private void Awake()
+    void Awake()
     {
-        // Disable VSync
         QualitySettings.vSyncCount = 0;
-
-        // Set frame rate
         Application.targetFrameRate = targetFrameRate;
-
-        // Physics time settings
         Time.fixedDeltaTime = fixedTimestep;
-        Time.maximumDeltaTime = maxAllowedTimestep;
-
-        // Configure FPS display style
-        fpsStyle = new GUIStyle
-        {
-            fontSize = 16,
-            normal = new GUIStyleState { textColor = Color.white },
-            alignment = TextAnchor.UpperRight
-        };
-
-        Debug.Log($"[SimulationPerformanceConfig] TargetFrameRate: {targetFrameRate}, FixedTimestep: {fixedTimestep}, VSync: OFF");
+        Time.maximumDeltaTime = maxTimestep;
     }
 
-    private void OnGUI()
+    void OnGUI()
     {
-        if (!showFPS) return;
-
-        float fps = 1.0f / Time.deltaTime;
-        Rect rect = new Rect(Screen.width - 110, 10, 100, 30);
-        GUI.Label(rect, $"FPS: {fps:F1}", fpsStyle);
+        if (showFPS)
+            GUI.Label(new Rect(Screen.width - 100, 5, 95, 20), 
+                     $"FPS: {1f / Time.deltaTime:F0}");
     }
 }

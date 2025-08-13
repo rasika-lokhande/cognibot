@@ -1,29 +1,30 @@
-
 using UnityEngine;
-using System;
-using System.Collections.Generic;
+
 public class CameraTarget : MonoBehaviour
 {
-    public Transform robotBase;
+    [SerializeField, Tooltip("Transform to follow with camera")]
+    private Transform cameraTarget;
 
     void Start()
     {
-        if (robotBase)
+        if (!cameraTarget)
         {
-            transform.position = robotBase.position;
-            transform.rotation = robotBase.rotation;
+            Debug.LogError("Camera Target not assigned to CameraTarget");
+            return;
         }
-
-        else
-        {
-            Debug.LogError("Attach camera target");
-        }
+        
+        SyncTransform();
     }
 
     void Update()
     {
-        if (robotBase)
-            transform.position = robotBase.position;
-            transform.rotation = robotBase.rotation;
+        if (cameraTarget)
+            SyncTransform();
+    }
+
+    private void SyncTransform()
+    {
+        transform.position = cameraTarget.position;
+        transform.rotation = cameraTarget.rotation;
     }
 }

@@ -11,7 +11,7 @@ public class JointStatePublisherEditor : Editor
         JointStatePublisher jsp = (JointStatePublisher)target;
         if (GUILayout.Button("Auto-Populate Joints"))
         {
-            jsp.EditorAutoPopulateJoints();
+            jsp.AutoPopulateJoints();
             EditorUtility.SetDirty(jsp); // Mark the object as dirty so Unity saves it
         }
     }
